@@ -35,6 +35,14 @@
             <p id="current-weather" aria-live="polite">Select a city to see its weather.</p>
           </div>
         </div>
+
+        <button id="all-cities-toggle" class="all-cities-toggle" type="button" aria-expanded="false" aria-controls="all-cities-weather">
+          Show all cities' weather
+        </button>
+        <section id="all-cities-weather" class="all-cities-weather" aria-labelledby="all-cities-heading" hidden>
+          <h2 id="all-cities-heading">Weather in all cities</h2>
+          <ul id="all-cities-list" class="all-cities-list" aria-live="polite"></ul>
+        </section>
       </main>
 
       <footer>

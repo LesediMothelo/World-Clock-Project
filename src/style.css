@@ -62,6 +62,63 @@ select:focus-visible{
     outline: none;
 }
 
+.all-cities-toggle{
+    width: 50%;
+    border: 0;
+    border-radius: 999px;
+    padding: 14px 18px;
+    background: #1d5f91;
+    color: #fff;
+    font: inherit;
+    font-weight: 200;
+    cursor: pointer;
+}
+
+.all-cities-toggle:hover{
+    background: #2e485d;
+}
+
+.all-cities-toggle:focus-visible{
+    outline: 3px solid rgba(46, 134, 193, 0.45);
+    outline-offset: 2px;
+}
+
+.all-cities-weather[hidden]{
+    display: none;
+}
+
+.all-cities-weather{
+    background: #edf8ff;
+    border: 1px solid #cfe5f7;
+    border-radius: 16px;
+    padding: 10px 15px;
+}
+
+.all-cities-weather h2{
+    color: #1d3557;
+    font-size: 18px;
+    margin: 0 0 12px;
+}
+
+.all-cities-list{
+    display: grid;
+    gap: 10px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.all-cities-list li{
+    background: rgba(255, 255, 255, 0.75);
+    border-radius: 12px;
+    padding: 12px 14px;
+    line-height: 1.5;
+}
+
+.all-cities-list p{
+    margin: 4px 0 0;
+}
+
 .time-output{
     background: #edf8ff;
     border: 1px solid #cfe5f7;

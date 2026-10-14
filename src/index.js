@@ -2,8 +2,12 @@ let citySelect = document.querySelector("#cities");
 let currentDateElement = document.querySelector("#current-date");
 let currentWeatherElement = document.querySelector("#current-weather");
 let currentWeatherIconElement = document.querySelector("#current-weather-icon");
+let allCitiesToggle = document.querySelector("#all-cities-toggle");
+let allCitiesWeatherElement = document.querySelector("#all-cities-weather");
+let allCitiesListElement = document.querySelector("#all-cities-list");
 let weatherRequestId = 0;
 let locationRequestId = 0;
+let allCitiesRequestId = 0;
 let currentLocation = null;
 
 let cities = {
@@ -135,11 +139,7 @@ function updateSelectedCityTime() {
   }
 }
 
-async function updateSelectedCityWeather(city) {
-  let requestId = ++weatherRequestId;
-  currentWeatherElement.textContent = "Loading current weather...";
-  currentWeatherIconElement.textContent = "";
-
+async function fetchCurrentWeather(city) {
   let query = new URLSearchParams({
     latitude: String(city.latitude),
     longitude: String(city.longitude),
@@ -149,28 +149,37 @@ async function updateSelectedCityWeather(city) {
     timezone: "auto",
   });
 
-  try {
-    let response = await fetch(`https://api.open-meteo.com/v1/forecast?${query}`);
-    if (!response.ok) {
-      throw new Error(`Weather service returned ${response.status}.`);
-    }
+  let response = await fetch(`https://api.open-meteo.com/v1/forecast?${query}`);
+  if (!response.ok) {
+    throw new Error(`Weather service returned ${response.status}.`);
+  }
 
-    let data = await response.json();
+  let data = await response.json();
+  let current = data.current;
+  if (
+    !current
+    || typeof current.temperature_2m !== "number"
+    || typeof current.relative_humidity_2m !== "number"
+    || typeof current.apparent_temperature !== "number"
+    || typeof current.weather_code !== "number"
+    || typeof current.wind_speed_10m !== "number"
+    || (current.is_day !== 0 && current.is_day !== 1)
+  ) {
+    throw new Error("Weather service returned incomplete current conditions.");
+  }
+
+  return current;
+}
+
+async function updateSelectedCityWeather(city) {
+  let requestId = ++weatherRequestId;
+  currentWeatherElement.textContent = "Loading current weather...";
+  currentWeatherIconElement.textContent = "";
+
+  try {
+    let current = await fetchCurrentWeather(city);
     if (requestId !== weatherRequestId) {
       return;
-    }
-
-    let current = data.current;
-    if (
-      !current
-      || typeof current.temperature_2m !== "number"
-      || typeof current.relative_humidity_2m !== "number"
-      || typeof current.apparent_temperature !== "number"
-      || typeof current.weather_code !== "number"
-      || typeof current.wind_speed_10m !== "number"
-      || (current.is_day !== 0 && current.is_day !== 1)
-    ) {
-      throw new Error("Weather service returned incomplete current conditions.");
     }
 
     let description = weatherDescriptions[current.weather_code] ?? "Conditions unavailable";
@@ -270,6 +279,61 @@ function updateSelectedCity() {
   }
 }
 
+function createAllCitiesWeatherItem(city) {
+  let item = document.createElement("li");
+  let heading = document.createElement("strong");
+  heading.textContent = city.name;
+  let reading = document.createElement("p");
+  reading.textContent = "Loading current weather...";
+  item.append(heading, reading);
+  return { item, reading };
+}
+
+async function updateAllCitiesWeather() {
+  let requestId = ++allCitiesRequestId;
+  let cityItems = Object.values(cities).map((city) => ({
+    city,
+    ...createAllCitiesWeatherItem(city),
+  }));
+  allCitiesListElement.replaceChildren(...cityItems.map(({ item }) => item));
+  await Promise.all(cityItems.map(async ({ city, reading }) => {
+    try {
+      let current = await fetchCurrentWeather(city);
+      if (requestId !== allCitiesRequestId || allCitiesWeatherElement.hidden) {
+        return;
+      }
+
+      let description = weatherDescriptions[current.weather_code] ?? "Conditions unavailable";
+      reading.textContent =
+        `${getWeatherIcon(current.weather_code, current.is_day === 1)} ${description}, `
+        + `${Math.round(current.temperature_2m)}°C (feels like ${Math.round(current.apparent_temperature)}°C). `
+        + `Humidity ${current.relative_humidity_2m}%; wind ${Math.round(current.wind_speed_10m)} km/h.`;
+    } catch (error) {
+      if (requestId !== allCitiesRequestId || allCitiesWeatherElement.hidden) {
+        return;
+      }
+
+      reading.textContent = "Weather is unavailable. Please try again later.";
+      console.error(`Could not load current weather for ${city.name}:`, error);
+    }
+  }));
+}
+
+allCitiesToggle.addEventListener("click", () => {
+  let isExpanded = allCitiesToggle.getAttribute("aria-expanded") === "true";
+  allCitiesToggle.setAttribute("aria-expanded", String(!isExpanded));
+  allCitiesWeatherElement.hidden = isExpanded;
+  allCitiesToggle.textContent = isExpanded
+    ? "Show all cities' weather"
+    : "Hide all cities' weather";
+
+  if (isExpanded) {
+    allCitiesRequestId += 1;
+  } else {
+    updateAllCitiesWeather();
+  }
+});
+
 citySelect.addEventListener("change", updateSelectedCity);
 updateSelectedCity();
 window.setInterval(updateSelectedCityTime, 1000);
@@ -279,5 +343,8 @@ window.setInterval(() => {
     updateSelectedCityWeather(city);
   } else if (citySelect.value === "location" && currentLocation) {
     updateSelectedCityWeather(currentLocation);
+  }
+  if (!allCitiesWeatherElement.hidden) {
+    updateAllCitiesWeather();
   }
 }, 10 * 60 * 1000);
