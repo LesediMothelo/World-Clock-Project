@@ -3,6 +3,8 @@ let currentDateElement = document.querySelector("#current-date");
 let currentWeatherElement = document.querySelector("#current-weather");
 let currentWeatherIconElement = document.querySelector("#current-weather-icon");
 let weatherRequestId = 0;
+let locationRequestId = 0;
+let currentLocation = null;
 
 let cities = {
   johannesburg: {
@@ -104,9 +106,12 @@ function getWeatherIcon(weatherCode, isDay) {
 
 function updateSelectedCityTime() {
   let city = cities[citySelect.value];
+  let location = citySelect.value === "location" ? currentLocation : null;
 
-  if (!city) {
-    currentDateElement.textContent = "Select a city to see its local time.";
+  if (!city && !location) {
+    currentDateElement.textContent = citySelect.value === "location"
+      ? "Finding your location..."
+      : "Select a city to see its local time.";
     return;
   }
 
@@ -118,11 +123,16 @@ function updateSelectedCityTime() {
     hour: "numeric",
     minute: "2-digit",
     second: "2-digit",
-    timeZone: city.timeZone,
+    timeZone: city ? city.timeZone : location.timeZone,
     timeZoneName: "short",
   }).format(new Date());
 
-  currentDateElement.textContent = `It is ${localTime} in ${city.name}.`;
+  if (city) {
+    currentDateElement.textContent = `It is ${localTime} in ${city.name}.`;
+  } else {
+    currentDateElement.textContent =
+      `It is ${localTime} at your location (${location.latitude.toFixed(2)}, ${location.longitude.toFixed(2)}).`;
+  }
 }
 
 async function updateSelectedCityWeather(city) {
@@ -180,7 +190,74 @@ async function updateSelectedCityWeather(city) {
   }
 }
 
+function getLocationErrorMessage(error) {
+  if (error.code === 1) {
+    return "Location access was denied. Allow location access in your browser to see local time and weather.";
+  }
+  if (error.code === 2) {
+    return "Your location is currently unavailable. Please try again later.";
+  }
+  if (error.code === 3) {
+    return "Finding your location timed out. Please try again.";
+  }
+  return "Could not determine your location. Please try again.";
+}
+
+function requestCurrentLocation() {
+  let requestId = ++locationRequestId;
+  weatherRequestId += 1;
+  currentDateElement.textContent = "Finding your location...";
+  currentWeatherElement.textContent = "Finding your location to load current weather...";
+  currentWeatherIconElement.textContent = "";
+
+  if (!navigator.geolocation) {
+    currentDateElement.textContent = "Location is not supported by this browser.";
+    currentWeatherElement.textContent = "Location is not supported by this browser, so local weather is unavailable.";
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      if (requestId !== locationRequestId || citySelect.value !== "location") {
+        return;
+      }
+
+      currentLocation = {
+        name: "Your location",
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      };
+      updateSelectedCityTime();
+      updateSelectedCityWeather(currentLocation);
+    },
+    (error) => {
+      if (requestId !== locationRequestId || citySelect.value !== "location") {
+        return;
+      }
+
+      let message = getLocationErrorMessage(error);
+      currentDateElement.textContent = message;
+      currentWeatherElement.textContent = message;
+      currentWeatherIconElement.textContent = "";
+    },
+    { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 },
+  );
+}
+
 function updateSelectedCity() {
+  if (citySelect.value === "location") {
+    if (currentLocation) {
+      locationRequestId += 1;
+      updateSelectedCityTime();
+      updateSelectedCityWeather(currentLocation);
+    } else {
+      requestCurrentLocation();
+    }
+    return;
+  }
+
+  locationRequestId += 1;
   updateSelectedCityTime();
 
   let city = cities[citySelect.value];
@@ -200,5 +277,7 @@ window.setInterval(() => {
   let city = cities[citySelect.value];
   if (city) {
     updateSelectedCityWeather(city);
+  } else if (citySelect.value === "location" && currentLocation) {
+    updateSelectedCityWeather(currentLocation);
   }
 }, 10 * 60 * 1000);
