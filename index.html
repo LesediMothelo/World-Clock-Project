@@ -35,15 +35,16 @@
             <p id="current-weather" aria-live="polite">Select a city to see its weather.</p>
           </div>
         </div>
-
-        <button id="all-cities-toggle" class="all-cities-toggle" type="button" aria-expanded="false" aria-controls="all-cities-weather">
-          Show all cities' weather
-        </button>
-        <section id="all-cities-weather" class="all-cities-weather" aria-labelledby="all-cities-heading" hidden>
-          <h2 id="all-cities-heading">Weather in all cities</h2>
-          <ul id="all-cities-list" class="all-cities-list" aria-live="polite"></ul>
-        </section>
       </main>
+
+      <button id="toggle-all-cities-weather" class="weather-toggle" type="button" aria-expanded="false" aria-controls="all-cities-weather">
+        Show weather for all cities
+      </button>
+
+      <section id="all-cities-weather" class="all-cities-weather" aria-labelledby="all-cities-weather-heading" hidden>
+        <h2 id="all-cities-weather-heading">Weather in all cities</h2>
+        <div id="all-cities-weather-list" class="all-cities-weather-list"></div>
+      </section>
 
       <footer>
         This project was coded with ❤️ by Mel is open sourced on

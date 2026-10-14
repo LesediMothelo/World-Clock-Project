@@ -48,7 +48,7 @@ main{
 select{
     width: 100%;
     border: 2px solid #b9d8f3;
-    border-radius: 999px;
+    border-radius: 990px;
     padding: 14px 18px;
     font-size: 15px;
     font-family: inherit;
@@ -62,61 +62,76 @@ select:focus-visible{
     outline: none;
 }
 
-.all-cities-toggle{
+.weather-toggle{
     width: 50%;
+    margin-top: 16px;
     border: 0;
-    border-radius: 999px;
+    border-radius: 990px;
     padding: 14px 18px;
-    background: #1d5f91;
+    background: #2e86c1;
     color: #fff;
     font: inherit;
-    font-weight: 200;
+    font-weight: 600;
     cursor: pointer;
 }
 
-.all-cities-toggle:hover{
-    background: #2e485d;
+.weather-toggle:hover{
+    background: #246d9e;
 }
 
-.all-cities-toggle:focus-visible{
-    outline: 3px solid rgba(46, 134, 193, 0.45);
-    outline-offset: 2px;
-}
-
-.all-cities-weather[hidden]{
-    display: none;
+.weather-toggle:focus-visible{
+    outline: 3px solid rgba(46, 134, 193, 0.35);
+    outline-offset: 3px;
 }
 
 .all-cities-weather{
-    background: #edf8ff;
-    border: 1px solid #cfe5f7;
-    border-radius: 16px;
-    padding: 10px 15px;
+    margin-top: 20px;
 }
 
 .all-cities-weather h2{
-    color: #1d3557;
-    font-size: 18px;
     margin: 0 0 12px;
+    color: #1d3557;
+    font-size: 20px;
 }
 
-.all-cities-list{
+.all-cities-weather-list{
     display: grid;
-    gap: 10px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
 }
 
-.all-cities-list li{
-    background: rgba(255, 255, 255, 0.75);
-    border-radius: 12px;
-    padding: 12px 14px;
+.city-weather-card{
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid #cfe5f7;
+    border-radius: 16px;
+    background: #edf8ff;
+    color: #5780b6;
     line-height: 1.5;
 }
 
-.all-cities-list p{
-    margin: 4px 0 0;
+.city-weather-card h3{
+    margin: 0 0 8px;
+    color: #4a668f;
+    font-size: 16px;
+}
+
+.city-weather-reading{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.city-weather-reading p{
+    margin: 0;
+    font-size: 14px;
+}
+
+.city-weather-icon{
+    flex: 0 0 32px;
+    font-size: 26px;
+    line-height: 1;
+    text-align: center;
 }
 
 .time-output{
