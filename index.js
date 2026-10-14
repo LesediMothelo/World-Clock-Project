@@ -1,0 +1,1 @@
+let world = document.getElementById('world-clock');
