@@ -21,6 +21,10 @@ body{
     backdrop-filter: blur(10px);
 }
 
+label{
+    font-weight: 600;
+}
+
 header{
     text-align: center;
     margin-bottom: 24px;
@@ -38,14 +42,7 @@ h1{
 main{
     display: flex;
     flex-direction: column;
-    gap: 18px;
-}
-
-form{
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 0;
+    gap: 12px;
 }
 
 select{
@@ -54,14 +51,15 @@ select{
     border-radius: 999px;
     padding: 14px 18px;
     font-size: 15px;
-    outline: none;
+    font-family: inherit;
     background-color: #f9fcff;
     color: #1f3047;
 }
 
-select:focus{
+select:focus-visible{
     border-color: #2e86c1;
     box-shadow: 0 0 0 3px rgba(46, 134, 193, 0.16);
+    outline: none;
 }
 
 .time-output{
@@ -69,10 +67,27 @@ select:focus{
     border: 1px solid #cfe5f7;
     border-radius: 16px;
     padding: 20px;
-    min-height: 60px;
     color: #2d4667;
     line-height: 1.6;
-    margin-top: 18px;
+}
+
+.weather{
+    background: #fff8e8;
+    border: 1px solid #f0dfb9;
+    border-radius: 16px;
+    padding: 18px 20px;
+    color: #2d4667;
+    line-height: 1.6;
+}
+
+.weather h2{
+    color: #1d3557;
+    font-size: 18px;
+    margin: 0 0 8px;
+}
+
+.weather p{
+    margin: 0;
 }
 
 footer{
@@ -82,4 +97,23 @@ footer{
     color: #26405a;
     line-height: 1.7;
     font-weight: 600;
+}
+
+footer a{
+    color: #1d5f91;
+}
+
+@media (max-width: 520px){
+    body{
+        padding: 16px;
+    }
+
+    .container{
+        width: 100%;
+        padding: 24px;
+    }
+
+    h1{
+        font-size: 30px;
+    }
 }

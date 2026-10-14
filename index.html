@@ -2,36 +2,43 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.37/moment-timezone-with-data-1970-2030.min.js"></script>
     <link rel="stylesheet" href="src/style.css" />
-    <title>World Clock - Matt Delac</title>
+    <title>World Clock</title>
   </head>
-    <body>
+  <body>
     <div class="container">
-      <h1>World Clock⌛</h1>
+      <header>
+        <h1>World Clock⌛</h1>
+      </header>
 
-      <select>
-        <option value="">Select a city..</option>
-        <option value="">Johannesburg 🇿🇦</option>
-        <option value="">Lagos 🇳🇬</option>
-        <option value="">Tokyo 🇯🇵</option>
-        <option value="">London 🇬🇧</option>
-        <option value="">Dubai 🇦🇪</option>
-        <option value="">Berlin 🇩🇪</option>
-      </select>
+      <main>
+        <label for="cities">Choose a city</label>
+        <select id="cities" name="city">
+          <option value="">Select a city...</option>
+          <option value="johannesburg">Johannesburg 🇿🇦</option>
+          <option value="lagos">Lagos 🇳🇬</option>
+          <option value="tokyo">Tokyo 🇯🇵</option>
+          <option value="london">London 🇬🇧</option>
+          <option value="dubai">Dubai 🇦🇪</option>
+          <option value="berlin">Berlin 🇩🇪</option>
+        </select>
 
-      <div class="weather" id="current-weather">
-        <h2>Current Weather</h2>
-        <p id="weather"></p>
-      </div>
-    <footer>
-      This project was coded with ❤️ by Mel and is open sourced on 
-      <a href="#" target="_blank"> GitHub</a
-      >
-    </footer>
+        <section class="time-output" id="current-date" aria-live="polite">
+          Select a city to see its local time.
+        </section>
+
+        <section class="weather" aria-labelledby="weather-heading">
+          <h2 id="weather-heading">Current weather</h2>
+          <p id="current-weather" aria-live="polite">Select a city to see its weather.</p>
+        </section>
+      </main>
+
+      <footer>
+        This project was coded with ❤️ by Mel and is open sourced on
+        <a href="#" target="_blank">GitHub and deployed on Netlify.</a>.
+      </footer>
+    </div>
     <script src="src/index.js"></script>
   </body>
 </html>
