@@ -1,6 +1,7 @@
 let citySelect = document.querySelector("#cities");
 let currentDateElement = document.querySelector("#current-date");
 let currentWeatherElement = document.querySelector("#current-weather");
+let currentWeatherIconElement = document.querySelector("#current-weather-icon");
 let weatherRequestId = 0;
 
 let cities = {
@@ -73,6 +74,34 @@ let weatherDescriptions = {
   99: "Thunderstorm with heavy hail",
 };
 
+function getWeatherIcon(weatherCode, isDay) {
+  if (weatherCode === 0) {
+    return isDay ? "☀️" : "🌙";
+  }
+  if (weatherCode === 1) {
+    return isDay ? "🌤️" : "☁️";
+  }
+  if (weatherCode === 2) {
+    return isDay ? "⛅" : "☁️";
+  }
+  if (weatherCode === 3) {
+    return "☁️";
+  }
+  if (weatherCode === 45 || weatherCode === 48) {
+    return "🌫️";
+  }
+  if (weatherCode >= 51 && weatherCode <= 67) {
+    return "🌧️";
+  }
+  if (weatherCode >= 71 && weatherCode <= 86) {
+    return "🌨️";
+  }
+  if (weatherCode >= 95 && weatherCode <= 99) {
+    return "⛈️";
+  }
+  return "🌡️";
+}
+
 function updateSelectedCityTime() {
   let city = cities[citySelect.value];
 
@@ -99,11 +128,12 @@ function updateSelectedCityTime() {
 async function updateSelectedCityWeather(city) {
   let requestId = ++weatherRequestId;
   currentWeatherElement.textContent = "Loading current weather...";
+  currentWeatherIconElement.textContent = "";
 
   let query = new URLSearchParams({
     latitude: String(city.latitude),
     longitude: String(city.longitude),
-    current: "temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m",
+    current: "temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,is_day",
     temperature_unit: "celsius",
     wind_speed_unit: "kmh",
     timezone: "auto",
@@ -128,11 +158,13 @@ async function updateSelectedCityWeather(city) {
       || typeof current.apparent_temperature !== "number"
       || typeof current.weather_code !== "number"
       || typeof current.wind_speed_10m !== "number"
+      || (current.is_day !== 0 && current.is_day !== 1)
     ) {
       throw new Error("Weather service returned incomplete current conditions.");
     }
 
     let description = weatherDescriptions[current.weather_code] ?? "Conditions unavailable";
+    currentWeatherIconElement.textContent = getWeatherIcon(current.weather_code, current.is_day === 1);
     currentWeatherElement.textContent =
       `${city.name}: ${description}, ${Math.round(current.temperature_2m)}°C `
       + `(feels like ${Math.round(current.apparent_temperature)}°C). `
@@ -143,6 +175,7 @@ async function updateSelectedCityWeather(city) {
     }
 
     currentWeatherElement.textContent = `Weather is unavailable for ${city.name}. Please try again later.`;
+    currentWeatherIconElement.textContent = "";
     console.error("Could not load current weather:", error);
   }
 }
@@ -156,6 +189,7 @@ function updateSelectedCity() {
   } else {
     weatherRequestId += 1;
     currentWeatherElement.textContent = "Select a city to see its weather.";
+    currentWeatherIconElement.textContent = "";
   }
 }
 

@@ -24,14 +24,17 @@
           <option value="berlin">Berlin 🇩🇪</option>
         </select>
 
-        <section class="time-output" id="current-date" aria-live="polite">
-          Select a city to see its local time.
-        </section>
+        <div class="time-output" id="current-date" aria-live="polite">
+      Select a city to see its local time.
+        </div>
 
-        <section class="weather" aria-labelledby="weather-heading">
-          <h2 id="weather-heading">Current weather</h2>
-          <p id="current-weather" aria-live="polite">Select a city to see its weather.</p>
-        </section>
+        <div class="weather" aria-labelledby="weather-heading">
+          <h2 id="weather-heading">Current Weather🌥️</h2>
+          <div class="weather-reading">
+            <span id="current-weather-icon" class="weather-icon" aria-hidden="true"></span>
+            <p id="current-weather" aria-live="polite">Select a city to see its weather.</p>
+          </div>
+        </div>
       </main>
 
       <footer>
